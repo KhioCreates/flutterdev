@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'signup.dart'; // Import your signup.dart file
+import 'forgotpass.dart'; // Add this import for the forgot password screen
+import 'profile_setup.dart'; // Import the profile setup screen
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +23,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Email input
                   TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: 'Email or Phone',
                       labelStyle: TextStyle(color: Colors.black54),
@@ -111,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Password input
                   TextField(
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -191,11 +205,19 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Forgot Password
+                // Forgot Password - UPDATED WITH NAVIGATION
                 Align(
                   alignment: Alignment.center,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigate to forgot password screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(color: Colors.grey[600], fontSize: 14),
@@ -228,7 +250,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: EdgeInsets.symmetric(vertical: 18),
                         elevation: 0,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        _handleLogin();
+                      },
                       child: Text(
                         'Login',
                         style: TextStyle(
@@ -313,4 +337,60 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  void _handleLogin() {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // Validate email field
+    if (email.isEmpty) {
+      _showMessage('Please enter your email or phone');
+      return;
+    }
+
+    // Validate password field
+    if (password.isEmpty) {
+      _showMessage('Please enter your password');
+      return;
+    }
+
+    // Basic email validation (optional - you can make this more strict)
+    if (email.contains('@') && !_isValidEmail(email)) {
+      _showMessage('Please enter a valid email address');
+      return;
+    }
+
+    // Password length validation
+    if (password.length < 6) {
+      _showMessage('Password must be at least 6 characters');
+      return;
+    }
+
+    // TODO: Add your authentication logic here
+    // For now, just navigate to profile setup screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileSetupScreen(),
+      ),
+    );
+  }
+
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+void _showMessage(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Color(0xFF646464),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      margin: EdgeInsets.all(20),
+    ),
+  );
+}
 }
