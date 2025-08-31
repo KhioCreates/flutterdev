@@ -1,130 +1,116 @@
 import 'package:flutter/material.dart';
+import 'main_app_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   final String firstName;
   final String lastName;
 
   const WelcomeScreen({
-    Key? key,
-    this.firstName = 'User', // Default name if skipped
+    super.key,
+    this.firstName = 'User',
     this.lastName = '',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Create display name
     String displayName = firstName.isNotEmpty ? firstName : 'User';
-    if (lastName.isNotEmpty) {
-      displayName = '$firstName $lastName';
-    }
+    if (lastName.isNotEmpty) displayName = '$firstName $lastName';
 
     return Scaffold(
-      backgroundColor: Color(0xFF6B6B6B), // Dark gray background
+      backgroundColor: const Color(0xFF6B6B6B),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(30),
+          padding: const EdgeInsets.all(30),
           child: Column(
             children: [
-              // Top bar with menu and close
+              // top bar
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.more_horiz,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  const Icon(Icons.more_horiz, color: Colors.white, size: 24),
                   GestureDetector(
-                    onTap: () {
-                      // Close the app or navigate to main screen
-                      Navigator.popUntil(context, (route) => route.isFirst);
-                    },
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 24,
-                    ),
+                    onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+                    child: const Icon(Icons.close, color: Colors.white, size: 24),
                   ),
                 ],
               ),
 
-              // Main content
+              // center content
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Welcome message
-                    Text(
-                      'Welcome, ${displayName}!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-
-                    SizedBox(height: 30),
-
-                    // Description text
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          height: 1.5,
+                    // subtle fade-in + slide
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeOut,
+                      tween: Tween(begin: 0, end: 1),
+                      builder: (context, t, child) => Opacity(
+                        opacity: t,
+                        child: Transform.translate(
+                          offset: Offset(0, (1 - t) * 16),
+                          child: child,
                         ),
+                      ),
+                      child: Column(
                         children: [
-                          TextSpan(
-                            text: 'Your creative journey continues here in the ',
-                          ),
-                          TextSpan(
-                            text: 'Color Mix Lab',
-                            style: TextStyle(
-                              color: Colors.red,
+                          Text(
+                            'Welcome, $displayName!',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextSpan(
-                            text: '. Get ready to blend, experiment, and unleash your artistic flair. Let\'s create some vibrant masterpieces together!',
+                          const SizedBox(height: 24),
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: const TextSpan(
+                              style: TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
+                              children: [
+                                TextSpan(text: 'Your creative journey continues here in the '),
+                                TextSpan(
+                                  text: 'Color Mix Lab',
+                                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text:
+                                      '. Get ready to blend, experiment, and unleash your artistic flair!',
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(height: 50),
                         ],
                       ),
                     ),
 
-                    SizedBox(height: 50),
-
-                    // Color wheel logo
-                    Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/logo.png', // Same logo as other screens
-                          width: 150,
-                          height: 150,
-                          fit: BoxFit.cover,
+                    // logo (hero matches earlier screens)
+                    Hero(
+                      tag: 'app-logo',
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
                       ),
                     ),
-
-                    SizedBox(height: 80),
                   ],
                 ),
               ),
 
-              // Continue button
+              // continue button
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -133,7 +119,7 @@ class WelcomeScreen extends StatelessWidget {
                     BoxShadow(
                       color: Colors.black.withOpacity(0.3),
                       blurRadius: 10,
-                      offset: Offset(0, 5),
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
@@ -143,28 +129,19 @@ class WelcomeScreen extends StatelessWidget {
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
-                      side: BorderSide(
-                        color: Colors.white.withOpacity(0.8),
-                        width: 2,
-                      ),
+                      side: BorderSide(color: Colors.white.withOpacity(0.8), width: 2),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 18),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
                     elevation: 0,
                   ),
-                  onPressed: () {
-                    _handleContinue(context);
-                  },
-                  child: Text(
+                  onPressed: () => _handleContinue(context),
+                  child: const Text(
                     'Continue',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -173,25 +150,10 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   void _handleContinue(BuildContext context) {
-    // TODO: Navigate to the main app screen
-    // For now, just show a message and go back
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Welcome to Color Mix Lab!'),
-        backgroundColor: Color(0xFF6B6B6B),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
+    // Go straight to the bottom-nav app
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const MainAppScreen()),
     );
-
-    // Navigate to your main app screen here
-    // Example: Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainAppScreen()));
-
-    // For demo purposes, go back to login
-    Future.delayed(Duration(seconds: 1), () {
-      Navigator.popUntil(context, (route) => route.isFirst);
-    });
   }
 }
